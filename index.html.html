@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>ACCESS TERMINAL</title>
+<style>
+body {
+background-color: #0b0c0f;
+color: #00ff99;
+font-family: monospace;
+padding: 20px;
+}
+#output {
+min-height: 300px;
+margin-bottom: 10px;
+white-space: pre-wrap;
+}
+input {
+background: none;
+border: none;
+color: #00ff99;
+font-family: inherit;
+font-size: 16px;
+width: 90%;
+outline: none;
+}
+.prompt { color: #00ffff; }
+</style>
+</head>
+<body>
+
+<div id="output">
+ACCESS TERMINAL v1.0
+System Initialization Complete.
+Wpisz <span style="color:#0ff">help</span>, aby zobaczyć dostępne komendy.
+</div>
+
+<div>
+<span class="prompt">guest@console:</span> <input id="cmd" autofocus>
+</div>
+
+<script>
+const output = document.getElementById('output');
+const input = document.getElementById('cmd');
+let systemFixed = false;
+let accessGranted = false;
+
+function write(text, color) {
+const span = document.createElement('div');
+if (color) span.style.color = color;
+span.textContent = text;
+output.appendChild(span);
+window.scrollTo(0, document.body.scrollHeight);
+}
+
+function handleCommand(cmd) {
+write("guest@console: " + cmd, "#0ff");
+
+switch (cmd.toLowerCase()) {
+case "help":
+write("Dostępne komendy:");
+write(" status – sprawdź stan systemu");
+write(" repair – napraw moduł (jeśli system offline)");
+write(" access – uzyskaj dostęp do danych (po naprawie)");
+write(" clear – wyczyść ekran");
+write(" scan – skanuj procesy");
+write(" reboot – restart systemu");
+write(" decrypt – odszyfruj dane");
+write(" locate – wyszukaj pliki");
+write(" shutdown – zamknij terminal");
+break;
+
+case "status":
+if (!systemFixed) {
+write("System ERROR — Moduł komunikacji offline.");
+} else {
+write("System OK — wszystkie moduły online.");
+}
+break;
+
+case "repair":
+if (systemFixed) {
+write("System już działa poprawnie.");
+} else {
+write("Naprawiam system...");
+setTimeout(() => {
+write("Reinstalacja modułów... 100%");
+write("System online.", "#0f0");
+systemFixed = true;
+}, 1500);
+}
+break;
+
+case "access":
+if (!systemFixed) {
+write("Odmowa dostępu. System nie naprawiony.", "#f66");
+} else if (!accessGranted) {
+write("Dostęp przyznany.", "#0f0");
+write("Oto współrzędne:");
+write("N51 05.123 E017 08.456", "#0ff"); // ← Wpisz tu swoje kordy
+accessGranted = true;
+} else {
+write("Współrzędne już zostały wyświetlone.");
+}
+break;
+
+case "clear":
+output.innerHTML = "";
+break;
+
+// zmyłki
+case "scan":
+write("Skanowanie systemu...");
+setTimeout(() => write("Brak aktywnych procesów."), 1000);
+break;
+
+case "reboot":
+write("Operacja zabroniona dla użytkownika GUEST.", "#f66");
+break;
+
+case "decrypt":
+write("Brak danych do odszyfrowania.");
+break;
+
+case "locate":
+write("Nie znaleziono pliku coordinates.dat.");
+break;
+
+case "shutdown":
+write("Dostęp zablokowany.", "#f66");
+break;
+
+default:
+write("Nieznana komenda. Wpisz 'help' aby zobaczyć listę dostępnych.", "#f66");
+}
+}
+
+input.addEventListener('keydown', e => {
+if (e.key === "Enter") {
+handleCommand(input.value.trim());
+input.value = "";
+}
+});
+</script>
+</body>
+</html>
